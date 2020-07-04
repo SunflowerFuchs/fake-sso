@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  php:
+    image: php:7.4-alpine
+    command: php -S 0.0.0.0:80 /app/Index.php
+    volumes:
+      - "./src/:/app"
+      - "./data:/data"
+    ports:
+      - "${PORT:-80}:80"
