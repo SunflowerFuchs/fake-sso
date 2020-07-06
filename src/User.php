@@ -23,10 +23,10 @@ class User {
 	 *
 	 * @throws Exception
 	 */
-	public function __construct( string $id ) {
+	public function __construct(string $id) {
 		$this->id = $id;
 
-		if( static::exists() ) {
+		if (static::exists()) {
 			$this->load();
 		}
 		else {
@@ -40,17 +40,17 @@ class User {
 	 * @throws Exception
 	 */
 	protected function create() : void {
-		if( is_null( $this->id ) ) {
-			throw new BadMethodCallException( __FUNCTION__ . ' called without $this->id being set.' );
+		if (is_null($this->id)) {
+			throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
 		}
 
 		$data                       = [];
 		$data['id']                 = $this->id;
-		$data['name']               = $this->name = bin2hex( random_bytes( 4 ) ) . ' ' . bin2hex( random_bytes( 4 ) );
-		$data['email']              = $this->email = bin2hex( random_bytes( 6 ) ) . '@' . bin2hex( random_bytes( 5 ) ) . '.localhost';
+		$data['name']               = $this->name = bin2hex(random_bytes(4)) . ' ' . bin2hex(random_bytes(4));
+		$data['email']              = $this->email = bin2hex(random_bytes(6)) . '@' . bin2hex(random_bytes(5)) . '.localhost';
 		static::$cache[ $this->id ] = $data;
 
-		$this->getDb()->query( "INSERT INTO users (id, name, email) VALUES ('${data['id']}', '${data['name']}', '${data['email']}')" );
+		$this->getDb()->query("INSERT INTO users (id, name, email) VALUES ('${data['id']}', '${data['name']}', '${data['email']}')");
 	}
 
 	/**
@@ -59,13 +59,13 @@ class User {
 	 * @throws Exception
 	 */
 	protected function load() : void {
-		if( is_null( $this->id ) ) {
-			throw new BadMethodCallException( __FUNCTION__ . ' called without $this->id being set.' );
+		if (is_null($this->id)) {
+			throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
 		}
 
 		$id = $this->id;
-		if( !isset( self::$cache[ $id ] ) ) {
-			self::$cache = $this->getDb()->query( "SELECT * FROM users WHERE users.id = '${id}'" )->fetchArray();
+		if (!isset(self::$cache[ $id ])) {
+			self::$cache = $this->getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
 		}
 		$data = self::$cache[ $id ];
 
@@ -80,16 +80,16 @@ class User {
 	 * @throws Exception
 	 */
 	protected function exists() : bool {
-		if( is_null( $this->id ) ) {
-			throw new BadMethodCallException( __FUNCTION__ . ' called without $this->id being set.' );
+		if (is_null($this->id)) {
+			throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
 		}
 
 		$id = $this->id;
-		if( !isset( self::$cache[ $id ] ) ) {
-			self::$cache[ $id ] = $this->getDb()->query( "SELECT * FROM users WHERE users.id = '${id}'" )->fetchArray();
+		if (!isset(self::$cache[ $id ])) {
+			self::$cache[ $id ] = $this->getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
 		}
 
-		return is_array( self::$cache[ $id ] );
+		return is_array(self::$cache[ $id ]);
 	}
 
 	/**
@@ -103,10 +103,10 @@ class User {
 	protected function getDb() : SQLite3 {
 		static $db = null;
 
-		if( !$db ) {
-			$db = new SQLite3( '/data/users.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE );
-			if( !$db->exec( 'CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT)' ) ) {
-				throw new Exception( 'Unknown error while creating users table.' );
+		if (!$db) {
+			$db = new SQLite3('/data/users.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+			if (!$db->exec('CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT)')) {
+				throw new Exception('Unknown error while creating users table.');
 			}
 		}
 
@@ -120,7 +120,7 @@ class User {
 	 * @throws Exception
 	 */
 	public function getToken() {
-		return base64_encode( $this->id . '|' . bin2hex( random_bytes( 10 ) ) );
+		return base64_encode($this->id . '|' . bin2hex(random_bytes(10)));
 	}
 
 	/**
@@ -131,18 +131,33 @@ class User {
 	 * @return static
 	 * @throws Exception
 	 */
-	public static function getByToken( string $token ) : self {
-		if( empty( $token ) ) {
-			throw new InvalidArgumentException( "Invalid code" );
+	public static function getByToken(string $token) : self {
+		if (empty($token)) {
+			throw new InvalidArgumentException("Invalid code");
 		}
-		$token  = base64_decode( $token );
-		$sepPos = strpos( $token, '|' );
-		if( $sepPos === false ) {
-			throw new InvalidArgumentException( "Invalid code" );
+		$token  = base64_decode($token);
+		$sepPos = strpos($token, '|');
+		if ($sepPos === false) {
+			throw new InvalidArgumentException("Invalid code");
 		}
 
-		$id = substr( $token, 0, $sepPos );
+		$id = substr($token, 0, $sepPos);
 
-		return new static( $id );
+		return new static($id);
+	}
+
+	/**
+	 * Returns all identifiers from the database
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public static function getAllIdentifiers() : array {
+		$identifiers = [];
+		$result      = static::getDb()->query("SELECT id FROM users;");
+		while ($id = $result->fetchArray()) {
+			$identifiers[] = $id['id'];
+		}
+		return $identifiers;
 	}
 }
