@@ -4,6 +4,7 @@ services:
   php:
     image: php:7.4-alpine
     command: php -S 0.0.0.0:80 /app/Index.php
+    restart: unless-stopped
     volumes:
       - "./src/:/app"
       - "./data:/data"
