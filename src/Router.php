@@ -61,12 +61,17 @@ class Router {
 		}
 
 		$user  = User::getByToken($token);
-		$id    = $user->id;
-		$name  = $user->name;
-		$email = $user->email;
+		$userInfo = [
+		    'sub' => $user->id,
+		    'name' => $user->name,
+		    'email' => $user->email,
+
+            // linkedin
+            'id' => $user->id,
+        ];
 
 		header('Content-Type: application/json');
-		echo "{\"sub\":\"${id}\",\"email\":\"${email}\",\"name\":\"${name}\"}";
+		echo json_encode($userInfo);
 	}
 
 	/**
