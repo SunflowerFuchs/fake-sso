@@ -7,4 +7,9 @@ require_once __DIR__ . '/Router.php';
 require_once __DIR__ . '/User.php';
 require_once __DIR__ . '/Config.php';
 
-Router::start();
+try {
+    Router::start();
+} catch (Exception $e) {
+    // hide the actual error message for security reasons
+    echo "Unexpected error occured";
+}
