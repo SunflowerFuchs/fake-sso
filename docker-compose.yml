@@ -3,10 +3,9 @@ version: "3.7"
 services:
   php:
     image: php:7.4-alpine
-    command: php -S 0.0.0.0:80 /app/Index.php
+    command: php -S 0.0.0.0:80 /app/src/Index.php
     restart: unless-stopped
     volumes:
-      - "./src/:/app"
-      - "./data:/data"
+      - "./:/app"
     ports:
       - "${PORT:-80}:80"
