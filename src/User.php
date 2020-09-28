@@ -53,7 +53,7 @@ class User
         $data['email'] = $this->email = bin2hex(random_bytes(6)) . '@' . bin2hex(random_bytes(5)) . '.localhost';
         static::$cache[$this->id] = $data;
 
-        $this->getDb()->query("INSERT INTO users (id, name, email) VALUES ('${data['id']}', '${data['name']}', '${data['email']}')");
+        static::getDb()->query("INSERT INTO users (id, name, email) VALUES ('${data['id']}', '${data['name']}', '${data['email']}')");
     }
 
     /**
@@ -69,7 +69,7 @@ class User
 
         $id = $this->id;
         if (!isset(self::$cache[$id])) {
-            self::$cache = $this->getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
+            self::$cache = static::getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
         }
         $data = self::$cache[$id];
 
@@ -91,7 +91,7 @@ class User
 
         $id = $this->id;
         if (!isset(self::$cache[$id])) {
-            self::$cache[$id] = $this->getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
+            self::$cache[$id] = static::getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
         }
 
         return is_array(self::$cache[$id]);
@@ -105,7 +105,7 @@ class User
      * @return SQLite3
      * @throws Exception
      */
-    protected function getDb(): SQLite3
+    protected static function getDb(): SQLite3
     {
         static $db = null;
 
