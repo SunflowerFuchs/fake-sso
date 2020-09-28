@@ -1,6 +1,6 @@
 <?php
 
-namespace Lamano\FakeSso;
+namespace SunflowerFuchs\FakeSso;
 
 use BadMethodCallException;
 use Exception;

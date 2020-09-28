@@ -1,6 +1,6 @@
 <?php
 
-namespace Lamano\FakeSso;
+namespace SunflowerFuchs\FakeSso;
 
 use Exception;
 use InvalidArgumentException;
@@ -66,7 +66,9 @@ class Router {
 		    'name' => $user->name,
 		    'email' => $user->email,
 
-            // linkedin
+            // we also fake additional fields to impersonate other sso providers
+
+            // sent by e.g. linkedin
             'id' => $user->id,
         ];
 
