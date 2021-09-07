@@ -141,7 +141,13 @@ AUTH;
      */
     protected static function showHelpPage(): void
     {
-        $host = $_SERVER['HTTP_HOST'] ?? 'host.docker.internal';
+        $protocol = 'http';
+        if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ||
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+            $protocol = 'https';
+        }
+        $host     = $_SERVER['HTTP_HOST'] ?? 'host.docker.internal';
+        $baseUrl  = "${protocol}://${host}";
 
         echo <<<HELP
 <html lang="en">
@@ -151,9 +157,9 @@ AUTH;
 			<h1>Fake SSO Provider</h1>
 			<p>Endpoints:</p>
 			<ul>
-				<li>http://${host}/authorize</li>
-				<li>http://${host}/token</li>
-				<li>http://${host}/me</li>
+				<li>${baseUrl}/authorize</li>
+				<li>${baseUrl}/token</li>
+				<li>${baseUrl}/me</li>
 			</ul>
 		</div>
 	</div>
