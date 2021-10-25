@@ -29,10 +29,31 @@ class Router
             case '/me':
                 self::getUserInfo();
                 break;
-            default:
+            case '':
+            case '/':
                 self::showHelpPage();
                 break;
+            default:
+                http_response_code(404);
+                echo "Not Found";
+                break;
         }
+    }
+
+    /**
+     * Returns the base url for the current request
+     *
+     * @return string
+     */
+    protected static function getBaseUrl(): string
+    {
+        $protocol = 'http';
+        if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ||
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+            $protocol = 'https';
+        }
+        $host = $_SERVER['HTTP_HOST'] ?? 'host.docker.internal';
+        return "${protocol}://${host}";
     }
 
     /**
@@ -141,13 +162,7 @@ AUTH;
      */
     protected static function showHelpPage(): void
     {
-        $protocol = 'http';
-        if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ||
-            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
-            $protocol = 'https';
-        }
-        $host     = $_SERVER['HTTP_HOST'] ?? 'host.docker.internal';
-        $baseUrl  = "${protocol}://${host}";
+        $baseUrl = self::getBaseUrl();
 
         echo <<<HELP
 <html lang="en">
