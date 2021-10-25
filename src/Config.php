@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace SunflowerFuchs\FakeSso;
 
-use ErrorException;
-
 class Config
 {
-    protected const CONFIG_FILE = __DIR__ . '/../conf/config.ini';
+    protected static array $defaults = [
+        'showKnown' => true,
+        'additionalFields' => true,
+        'clientSecret' => '',
+    ];
 
     protected array $config = [];
 
@@ -15,41 +17,30 @@ class Config
      * Config constructor.
      *
      * Should not be called directly, only induced by {@link getInstance}
-     *
-     * @param string $configFile
-     * @throws ErrorException when config file is invalid
      */
-    protected function __construct(string $configFile)
+    protected function __construct()
     {
-        if (!file_exists($configFile)) {
-            trigger_error("Config file \"${configFile}\" not found", E_USER_WARNING);
-            return;
-        }
-
-        $config = parse_ini_file($configFile, false, INI_SCANNER_TYPED);
-        if ($config === false) {
-            throw new ErrorException("Error while parsing config file \"${configFile}\"");
-        }
-
-        $this->config = $config;
+        $this->config = [
+            'showKnown' => filter_var($_ENV['SHOW_KNOWN'] ?? static::$defaults['showKnown'], FILTER_VALIDATE_BOOLEAN),
+            'additionalFields' => filter_var($_ENV['ADDITIONAL_FIELDS'] ?? static::$defaults['additionalFields'], FILTER_VALIDATE_BOOLEAN),
+            'clientSecret' => strval($_ENV['CLIENT_SECRET'] ?? static::$defaults['clientSecret']),
+        ];
     }
 
     /**
      * Returns the current instance, or creates a new one if there isn't one
      *
-     * @param string $configFile
      * @return static
-     * @throws ErrorException
      */
-    public static function getInstance(string $configFile = self::CONFIG_FILE): self
+    public static function getInstance(): self
     {
-        static $instances = [];
+        static $instance = null;
 
-        if ($instances[$configFile] === null) {
-            $instances[$configFile] = new static($configFile);
+        if ($instance === null) {
+            $instance = new static();
         }
 
-        return $instances[$configFile];
+        return $instance;
     }
 
     /**
@@ -80,43 +71,29 @@ class Config
      * Shortcut function for showKnown
      *
      * @return bool If not set, defaults to true
-     * @throws ErrorException
      */
     public static function showKnown(): bool
     {
-        return (bool)static::getInstance()->getOption('showKnown') ?? true;
-    }
-
-    /**
-     * Shortcut function for allowEmptyPw
-     *
-     * @return bool If not set, defaults to true
-     * @throws ErrorException
-     */
-    public static function allowEmptyPw(): bool
-    {
-        return (bool)static::getInstance()->getOption('allowEmptyPw') ?? true;
+        return (bool)static::getInstance()->getOption('showKnown') ?? static::$defaults['showKnown'];
     }
 
     /**
      * Shortcut function for additionalFields
      *
      * @return bool If not set, defaults to true
-     * @throws ErrorException
      */
     public static function additionalFields(): bool
     {
-        return (bool)static::getInstance()->getOption('additionalFields') ?? true;
+        return (bool)static::getInstance()->getOption('additionalFields') ?? static::$defaults['additionalFields'];
     }
 
     /**
      * Shortcut function for clientSecret
      *
      * @return string If not set, returns empty string
-     * @throws ErrorException
      */
     public static function clientSecret(): string
     {
-        return (string)static::getInstance()->getOption('clientSecret') ?? '';
+        return (string)static::getInstance()->getOption('clientSecret') ?? static::$defaults['clientSecret'];
     }
 }

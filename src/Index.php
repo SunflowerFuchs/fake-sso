@@ -11,5 +11,5 @@ try {
     Router::start();
 } catch (Exception $e) {
     // hide the actual error message for security reasons
-    echo "Unexpected error occured";
+    echo "Unexpected error occurred";
 }

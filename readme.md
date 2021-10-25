@@ -6,7 +6,11 @@ This repo is just a quick SSO provider mock.
 
 ## Installation
 
-1. Clone this repo
-2. Copy the `.env.example` to `.env` to modify the port it's running on
-3. Copy the `conf/config.ini.example` to `conf/config.ini` to modify various settings
-4. Run `docker-compose up -d` to start it up
+1. Copy the .env.example to .env
+2. Change variables as needed
+3. Run `docker-compose up -d`
+4. Profit
+
+## Development
+
+Change the `COMPOSE_FILE` to docker-compose.dev.yml to run the container with the `src/` dir mounted.

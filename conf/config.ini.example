@@ -1,7 +1,0 @@
-[Config]
-; Shows all known users as a dropdown
-showKnown = true
-; Adds additional fields to the response to try and impersonate other providers
-additionalFields = true
-; Sets a client_secret that has to be validated
-clientSecret =

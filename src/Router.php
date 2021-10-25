@@ -63,7 +63,7 @@ class Router
      */
     protected static function getToken(): void
     {
-        if (Config::clientSecret()) {
+        if (!empty(Config::clientSecret())) {
             if (Config::clientSecret() !== ($_POST['client_secret'] ?? false)) {
                 throw new InvalidArgumentException('Invalid client_secret');
             }
@@ -128,10 +128,13 @@ class Router
             throw new InvalidArgumentException('No redirect uri given.');
         }
 
-        $data = '';
+        $knownUsers = '';
         if (Config::showKnown()) {
             foreach (User::getAllIdentifiers() as $id) {
-                $data .= "<option>${id}</option>";
+                $knownUsers .= "<option>${id}</option>";
+            }
+            if (!empty($knownUsers)) {
+                $knownUsers = "<datalist id=\"known\">${knownUsers}</datalist>";
             }
         }
 
@@ -145,9 +148,7 @@ class Router
 				<input type="hidden" name="state" value="${state}">
 				<label for="code">Identifier:</label><br />
 				<input type="text" name="code" id="code" list="known"><br /><br />
-				<datalist id="known">
-				${data}
-				</datalist>
+				${knownUsers}
 				<input type="submit" value="Submit">
 			</fieldset>
 		</form>

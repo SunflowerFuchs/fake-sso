@@ -110,7 +110,7 @@ class User
         static $db = null;
 
         if (!$db) {
-            $db = new SQLite3(__DIR__ . '/../data/users.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+            $db = new SQLite3('/data/users.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
             if (!$db->exec('CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT)')) {
                 throw new Exception('Unknown error while creating users table.');
             }
