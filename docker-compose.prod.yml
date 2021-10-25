@@ -9,7 +9,7 @@ services:
       ADDITIONAL_FIELDS:
       CLIENT_SECRET:
     volumes:
-      - fake-sso-data
+      - "fake-sso-data:/data"
     ports:
       - "${PORT:-80}:80"
 
