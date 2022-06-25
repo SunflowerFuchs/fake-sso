@@ -47,13 +47,26 @@ class User
             throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
         }
 
-        $data = [];
-        $data['id'] = $this->id;
-        $data['name'] = $this->name = bin2hex(random_bytes(4)) . ' ' . bin2hex(random_bytes(4));
-        $data['email'] = $this->email = bin2hex(random_bytes(6)) . '@' . bin2hex(random_bytes(5)) . '.localhost';
-        static::$cache[$this->id] = $data;
+        $this->name = bin2hex(random_bytes(4)) . ' ' . bin2hex(random_bytes(4));
 
-        static::getDb()->query("INSERT INTO users (id, name, email) VALUES ('${data['id']}', '${data['name']}', '${data['email']}')");
+        // If the passed id is a valid email address, we use that, otherwise we generate a random one
+        if (filter_var($this->id, FILTER_VALIDATE_EMAIL, FILTER_FLAG_EMAIL_UNICODE) !== false) {
+            $this->email = $this->id;
+        } else {
+            $this->email = bin2hex(random_bytes(6)) . '@' . bin2hex(random_bytes(5)) . '.localhost';
+        }
+
+        static::$cache[$this->id] = [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email
+        ];
+
+        $stmt = static::getDb()->prepare('INSERT INTO users (id, name, email) VALUES (:id, :name, :email)');
+        $stmt->bindValue(':id', $this->id);
+        $stmt->bindValue(':name', $this->name);
+        $stmt->bindValue(':email', $this->email);
+        $stmt->execute();
     }
 
     /**
@@ -69,7 +82,9 @@ class User
 
         $id = $this->id;
         if (!isset(self::$cache[$id])) {
-            self::$cache = static::getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
+            $stmt = static::getDb()->prepare("SELECT * FROM users WHERE users.id = :id");
+            $stmt->bindValue(':id', $this->id);
+            self::$cache = $stmt->execute()->fetchArray();
         }
         $data = self::$cache[$id];
 
@@ -89,12 +104,13 @@ class User
             throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
         }
 
-        $id = $this->id;
-        if (!isset(self::$cache[$id])) {
-            self::$cache[$id] = static::getDb()->query("SELECT * FROM users WHERE users.id = '${id}'")->fetchArray();
+        if (!isset(self::$cache[$this->id])) {
+            $stmt = static::getDb()->prepare("SELECT * FROM users WHERE users.id = :id");
+            $stmt->bindValue(':id', $this->id);
+            self::$cache[$this->id] = $stmt->execute()->fetchArray();
         }
 
-        return is_array(self::$cache[$id]);
+        return is_array(self::$cache[$this->id]);
     }
 
     /**
