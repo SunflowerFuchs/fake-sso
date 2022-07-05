@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace SunflowerFuchs\FakeSso;
 
-use ErrorException;
 use Exception;
 use InvalidArgumentException;
 
@@ -12,7 +11,7 @@ class Router
     /**
      * Routes all traffic
      *
-     * @throws Exception
+     * @throws SsoException
      */
     public static function start(): void
     {
@@ -34,9 +33,7 @@ class Router
                 self::showHelpPage();
                 break;
             default:
-                http_response_code(404);
-                echo "Not Found";
-                break;
+                throw new SsoException('Not found.', 404);
         }
     }
 
@@ -59,19 +56,19 @@ class Router
     /**
      * Prints the access token as a json
      *
-     * @throws Exception
+     * @throws SsoException
      */
     protected static function getToken(): void
     {
         if (!empty(Config::clientSecret())) {
             if (Config::clientSecret() !== ($_POST['client_secret'] ?? false)) {
-                throw new InvalidArgumentException('Invalid client_secret');
+                throw new SsoException('Invalid client_secret', 401);
             }
         }
 
         $code = trim($_POST['code'] ?? '');
         if (empty($code)) {
-            throw new InvalidArgumentException('No code given.');
+            throw new SsoException('No code given.', 400);
         }
 
         $user = new User($code);
@@ -85,14 +82,13 @@ class Router
      * Prints out the user info as a json
      *
      * @throws InvalidArgumentException
-     * @throws ErrorException
-     * @throws Exception
+     * @throws SsoException
      */
     protected static function getUserInfo(): void
     {
         $token = str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION'] ?? '');
         if (empty($token)) {
-            throw new InvalidArgumentException('No authorization header passed');
+            throw new SsoException('No authorization header passed.', 401);
         }
 
         $user = User::getByToken($token);
@@ -117,7 +113,7 @@ class Router
     /**
      * Prints out the authorization form page
      * @throws InvalidArgumentException
-     * @throws ErrorException
+     * @throws SsoException
      * @throws Exception
      */
     protected static function showAuthPage(): void
@@ -125,7 +121,7 @@ class Router
         $redirect_uri = $_GET['redirect_uri'] ?? '';
         $state = $_GET['state'] ?? '';
         if (empty($redirect_uri)) {
-            throw new InvalidArgumentException('No redirect uri given.');
+            throw new SsoException('No redirect uri given.', 400);
         }
 
         $knownUsers = '';

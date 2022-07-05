@@ -10,9 +10,7 @@ use SQLite3;
 
 class User
 {
-    protected static array $cache = [];
-
-    public ?string $id = null;
+    public string $id;
     public ?string $name = null;
     public ?string $email = null;
 
@@ -23,6 +21,7 @@ class User
      *
      * @param string $id
      *
+     * @throws SsoException
      * @throws Exception
      */
     public function __construct(string $id)
@@ -43,10 +42,6 @@ class User
      */
     protected function create(): void
     {
-        if (is_null($this->id)) {
-            throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
-        }
-
         $this->name = bin2hex(random_bytes(4)) . ' ' . bin2hex(random_bytes(4));
 
         // If the passed id is a valid email address, we use that, otherwise we generate a random one
@@ -55,12 +50,6 @@ class User
         } else {
             $this->email = bin2hex(random_bytes(6)) . '@' . bin2hex(random_bytes(5)) . '.localhost';
         }
-
-        static::$cache[$this->id] = [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email
-        ];
 
         $stmt = static::getDb()->prepare('INSERT INTO users (id, name, email) VALUES (:id, :name, :email)');
         $stmt->bindValue(':id', $this->id);
@@ -72,23 +61,18 @@ class User
     /**
      * Loads a user from the database
      *
+     * @throws SsoException
      * @throws Exception
      */
     protected function load(): void
     {
-        if (is_null($this->id)) {
-            throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
+        $stmt = static::getDb()->prepare("SELECT * FROM users WHERE users.id = :id");
+        $stmt->bindValue(':id', $this->id);
+        $data = $stmt->execute()->fetchArray();
+        if (!$data) {
+            throw new SsoException('User could not be loaded.', 500);
         }
 
-        $id = $this->id;
-        if (!isset(self::$cache[$id])) {
-            $stmt = static::getDb()->prepare("SELECT * FROM users WHERE users.id = :id");
-            $stmt->bindValue(':id', $this->id);
-            self::$cache = $stmt->execute()->fetchArray();
-        }
-        $data = self::$cache[$id];
-
-        $this->id = $data['id'];
         $this->name = $data['name'];
         $this->email = $data['email'];
     }
@@ -96,21 +80,16 @@ class User
     /**
      * Checks if a user exists in the database
      *
+     * @throws SsoException
      * @throws Exception
      */
     protected function exists(): bool
     {
-        if (is_null($this->id)) {
-            throw new BadMethodCallException(__FUNCTION__ . ' called without $this->id being set.');
-        }
+        $stmt = static::getDb()->prepare("SELECT COUNT(*) as CNT FROM users WHERE users.id = :id");
+        $stmt->bindValue(':id', $this->id);
+        $data = $stmt->execute()->fetchArray();
+        return $data && $data['CNT'] == 1;
 
-        if (!isset(self::$cache[$this->id])) {
-            $stmt = static::getDb()->prepare("SELECT * FROM users WHERE users.id = :id");
-            $stmt->bindValue(':id', $this->id);
-            self::$cache[$this->id] = $stmt->execute()->fetchArray();
-        }
-
-        return is_array(self::$cache[$this->id]);
     }
 
     /**
@@ -139,9 +118,10 @@ class User
      * Returns the access token for the given user
      *
      * @return string
+     * @throws SsoException
      * @throws Exception
      */
-    public function getToken()
+    public function getToken(): string
     {
         return base64_encode($this->id . '|' . bin2hex(random_bytes(10)));
     }
@@ -152,21 +132,20 @@ class User
      * @param string $token
      *
      * @return static
-     * @throws Exception
+     * @throws SsoException
      */
     public static function getByToken(string $token): self
     {
-        if (empty($token)) {
-            throw new InvalidArgumentException("Invalid code");
-        }
         $token = base64_decode($token);
+        if ($token === false) {
+            throw new SsoException("Invalid access token.", 401);
+        }
         $sepPos = strpos($token, '|');
         if ($sepPos === false) {
-            throw new InvalidArgumentException("Invalid code");
+            throw new SsoException("Invalid access token.", 401);
         }
 
         $id = substr($token, 0, $sepPos);
-
         return new static($id);
     }
 
