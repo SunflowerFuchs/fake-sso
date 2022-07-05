@@ -1,8 +1,9 @@
 FROM php:7.4-alpine
 
 # For github container registry
-LABEL org.opencontainers.image.source https://github.com/sunflowerfuchs/fake-sso
+LABEL org.opencontainers.image.source=https://github.com/sunflowerfuchs/fake-sso
 
+RUN mkdir /data
 COPY ./src/ /app
 WORKDIR /app
 
