@@ -4,11 +4,23 @@ namespace SunflowerFuchs\FakeSso\Tests\Integration;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
+use SunflowerFuchs\FakeSso\Config;
 use SunflowerFuchs\FakeSso\Router;
 use SunflowerFuchs\FakeSso\SsoException;
 
+/**
+ * @coversNothing
+ */
 class AuthFlowTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        $config = Config::getInstance();
+        $config->setOption('showKnown', true);
+        $config->setOption('additionalFields', true);
+        $config->setOption('clientSecret', '');
+    }
+
     /**
      * @test
      * @return string
@@ -69,8 +81,8 @@ class AuthFlowTest extends TestCase
         $decoded = json_decode($userInfo, true);
         self::assertIsArray($decoded);
         self::assertArrayHasKey('email', $decoded);
-        self::assertArrayHasKey('id', $decoded);
-        self::assertEquals($userId, $decoded['id']);
+        self::assertArrayHasKey('sub', $decoded);
+        self::assertEquals($userId, $decoded['sub']);
     }
 
     /**

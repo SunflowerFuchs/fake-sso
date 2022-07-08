@@ -1,4 +1,4 @@
-<?php
+<?php // @codeCoverageIgnoreStart
 declare(strict_types=1);
 
 use SunflowerFuchs\FakeSso\Router;
@@ -20,3 +20,4 @@ try {
     echo "Unexpected error occurred";
     http_response_code(500);
 }
+// @codeCoverageIgnoreEnd

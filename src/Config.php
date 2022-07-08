@@ -6,7 +6,7 @@ namespace SunflowerFuchs\FakeSso;
 
 class Config
 {
-    protected static array $defaults = [
+    public static array $defaults = [
         'showKnown' => true,
         'additionalFields' => true,
         'clientSecret' => '',
@@ -76,7 +76,7 @@ class Config
      *
      * @return void
      */
-    protected function setOption(string $option, $value): void
+    public function setOption(string $option, $value): void
     {
         $this->config[$option] = $value;
     }
@@ -87,6 +87,7 @@ class Config
      * Shortcut function for showKnown
      *
      * @return bool If not set, defaults to true
+     * @codeCoverageIgnore we don't need to test shortcut functions
      */
     public static function showKnown(): bool
     {
@@ -97,6 +98,7 @@ class Config
      * Shortcut function for additionalFields
      *
      * @return bool If not set, defaults to true
+     * @codeCoverageIgnore we don't need to test shortcut functions
      */
     public static function additionalFields(): bool
     {
@@ -107,6 +109,7 @@ class Config
      * Shortcut function for clientSecret
      *
      * @return string If not set, returns empty string
+     * @codeCoverageIgnore we don't need to test shortcut functions
      */
     public static function clientSecret(): string
     {
@@ -117,6 +120,7 @@ class Config
      * Shortcut function for dbFile
      *
      * @return string If not set, returns default
+     * @codeCoverageIgnore we don't need to test shortcut functions
      */
     public static function dbFile(): string
     {

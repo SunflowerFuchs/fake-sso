@@ -5,6 +5,9 @@ namespace SunflowerFuchs\FakeSso;
 use Exception;
 use Throwable;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SsoException extends Exception
 {
     /**
