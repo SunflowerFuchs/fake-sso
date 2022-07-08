@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SunflowerFuchs\FakeSso;
@@ -9,6 +10,7 @@ class Config
         'showKnown' => true,
         'additionalFields' => true,
         'clientSecret' => '',
+        'dbFile' => '/data/users.sqlite'
     ];
 
     protected array $config = [];
@@ -20,11 +22,22 @@ class Config
      */
     protected function __construct()
     {
-        $this->config = [
-            'showKnown' => filter_var($_ENV['SHOW_KNOWN'] ?? static::$defaults['showKnown'], FILTER_VALIDATE_BOOLEAN),
-            'additionalFields' => filter_var($_ENV['ADDITIONAL_FIELDS'] ?? static::$defaults['additionalFields'], FILTER_VALIDATE_BOOLEAN),
-            'clientSecret' => strval($_ENV['CLIENT_SECRET'] ?? static::$defaults['clientSecret']),
-        ];
+        $this->setOption(
+            'showKnown',
+            filter_var($_ENV['SHOW_KNOWN'] ?? static::$defaults['showKnown'], FILTER_VALIDATE_BOOLEAN)
+        );
+        $this->setOption(
+            'additionalFields',
+            filter_var($_ENV['ADDITIONAL_FIELDS'] ?? static::$defaults['additionalFields'], FILTER_VALIDATE_BOOLEAN)
+        );
+        $this->setOption(
+            'clientSecret',
+            strval($_ENV['CLIENT_SECRET'] ?? static::$defaults['clientSecret'])
+        );
+        $this->setOption(
+            'dbFile',
+            strval($_ENV['CLIENT_SECRET'] ?? static::$defaults['clientSecret'])
+        );
     }
 
     /**
@@ -44,25 +57,28 @@ class Config
     }
 
     /**
-     * Returns the entire config as an array
-     *
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->config;
-    }
-
-    /**
-     * Gets a single value from the config
+     * Gets a value from the config
      *
      * @param string $option
      *
-     * @return mixed Returns whatever value the option is set to in the config; Defaults to null if option does not exists
+     * @return mixed Returns whatever value the option is set to in the config; Defaults to null if option does not exist
      */
     public function getOption(string $option)
     {
         return $this->config[$option] ?? null;
+    }
+
+    /**
+     * Sets a value in the config
+     *
+     * @param string $option
+     * @param mixed $value
+     *
+     * @return void
+     */
+    protected function setOption(string $option, $value): void
+    {
+        $this->config[$option] = $value;
     }
 
     // Shortcut functions
@@ -74,7 +90,7 @@ class Config
      */
     public static function showKnown(): bool
     {
-        return (bool)static::getInstance()->getOption('showKnown') ?? static::$defaults['showKnown'];
+        return (bool)static::getInstance()->getOption('showKnown');
     }
 
     /**
@@ -84,7 +100,7 @@ class Config
      */
     public static function additionalFields(): bool
     {
-        return (bool)static::getInstance()->getOption('additionalFields') ?? static::$defaults['additionalFields'];
+        return (bool)static::getInstance()->getOption('additionalFields');
     }
 
     /**
@@ -94,6 +110,16 @@ class Config
      */
     public static function clientSecret(): string
     {
-        return (string)static::getInstance()->getOption('clientSecret') ?? static::$defaults['clientSecret'];
+        return (string)static::getInstance()->getOption('clientSecret');
+    }
+
+    /**
+     * Shortcut function for dbFile
+     *
+     * @return string If not set, returns empty string
+     */
+    public static function dbFile(): string
+    {
+        return (string)static::getInstance()->getOption('dbFile');
     }
 }

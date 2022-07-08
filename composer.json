@@ -1,0 +1,25 @@
+{
+	"name": "sunflowerfuchs/fake-sso",
+	"description": "A simple SSO provider mock",
+	"minimum-stability": "stable",
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "Pascal Pirschel",
+			"email": "pascal.pirschel@gmail.com"
+		}
+	],
+	"require": {
+		"php": "^7.4",
+		"ext-sqlite3": "*"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"SunflowerFuchs\\FakeSso\\": "src/",
+			"SunflowerFuchs\\FakeSso\\Tests\\": "tests/"
+		}
+	}
+}

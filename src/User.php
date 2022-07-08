@@ -105,7 +105,7 @@ class User
         static $db = null;
 
         if (!$db) {
-            $db = new SQLite3('/data/users.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+            $db = new SQLite3(Config::dbFile(), SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
             if (!$db->exec('CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT)')) {
                 throw new Exception('Unknown error while creating users table.');
             }
@@ -136,7 +136,7 @@ class User
      */
     public static function getByToken(string $token): self
     {
-        $token = base64_decode($token);
+        $token = base64_decode($token, true);
         if ($token === false) {
             throw new SsoException("Invalid access token.", 401);
         }
