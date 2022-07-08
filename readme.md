@@ -13,4 +13,6 @@ This repo is just a quick SSO provider mock.
 
 ## Development
 
-Change the `COMPOSE_FILE` to docker-compose.dev.yml to run the container with the `src/` dir mounted.
+The container has 2 build stages, just build the image with `--target dev` to generate the development image. 
+
+The development image has xdebug added for easy debugging, and composer for installing dev-dependencies like phpunit.
