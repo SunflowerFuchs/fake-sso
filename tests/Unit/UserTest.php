@@ -98,7 +98,7 @@ class UserTest extends TestCase
 
         $identifiers = User::getAllIdentifiers();
         self::assertIsArray($identifiers);
-        self::assertEquals($expected, array_intersect($identifiers, $expected));
+        self::assertEquals($expected, array_values(array_intersect($identifiers, $expected)));
 
     }
 
