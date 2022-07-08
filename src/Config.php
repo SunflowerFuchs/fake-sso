@@ -36,7 +36,7 @@ class Config
         );
         $this->setOption(
             'dbFile',
-            strval($_ENV['CLIENT_SECRET'] ?? static::$defaults['clientSecret'])
+            strval($_ENV['DB_FILE'] ?? static::$defaults['dbFile'])
         );
     }
 
@@ -116,7 +116,7 @@ class Config
     /**
      * Shortcut function for dbFile
      *
-     * @return string If not set, returns empty string
+     * @return string If not set, returns default
      */
     public static function dbFile(): string
     {
