@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  php:
+    image: ghcr.io/sunflowerfuchs/fake-sso:latest
+    restart: unless-stopped
+    environment:
+      SHOW_KNOWN:
+      ADDITIONAL_FIELDS:
+      CLIENT_SECRET:
+    volumes:
+      - "fake-sso-data:/data"
+    ports:
+      - "${PORT:-80}:80"
+
+volumes:
+  fake-sso-data:
+    external: true
