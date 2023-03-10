@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <title>OpenId Provider Mock</title>
+    <script src="web/static/main.js"></script>
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div style="margin: auto; width: auto; height: auto;">
+            <h1>OpenId Provider Mock</h1>
+            <label>OpenId Flow:&nbsp;
+                <select id="FlowSelector">
+                    <option value="AuthCodeFlow">Authorization Code Flow</option>
+                    <option value="AuthCodeFlowPkce">Authorization Code Flow with PKCE</option>
+                    <option value="ImplicitFlow">Implicit Flow (deprecated)</option>
+                    <option value="ImplicitFlowPost">Implicit Flow with Form Post</option>
+                    <option value="HybridFlow">Hybrid Flow</option>
+                    <option value="DeviceAuthorizationFlow">Device Authorization Flow</option>
+                    <option value="ResourceOwnerPasswordFlow">Resource Owner Password Flow</option>
+                </select>
+            </label>
+            <div id="AuthCodeFlow">
+                <p>Endpoints:</p>
+                <ul>
+                    <li>{{.UrlPrefix}}/authorize</li>
+                    <li>{{.UrlPrefix}}/token</li>
+                    <li>{{.UrlPrefix}}/me</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
