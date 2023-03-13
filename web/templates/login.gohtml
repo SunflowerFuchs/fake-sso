@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+    <title>OpenId Provider Mock</title>
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div style="margin: auto; width: auto; height: auto;">
+            <h1>OpenId Provider Mock</h1>
+            <form method="post" action="/auth-code/submit">
+                <label>Email:
+                    <input type="email" name="email" required/>
+                </label>
+                <input type="hidden" value="{{.RedirectUri}}" name="redirect_uri">
+                <input type="hidden" value="{{.State}}" name="state">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

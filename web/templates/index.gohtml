@@ -1,15 +1,18 @@
 <html lang="en">
 <head>
     <title>OpenId Provider Mock</title>
-    <script src="web/static/main.js"></script>
 </head>
 <body>
     <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
         <div style="margin: auto; width: auto; height: auto;">
             <h1>OpenId Provider Mock</h1>
+            <p>
+                Discovery:<br />
+                <a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/.well-known/openid-configuration</a>
+            </p>
             <label>OpenId Flow:&nbsp;
                 <select id="FlowSelector">
-                    <option value="AuthCodeFlow">Authorization Code Flow</option>
+                    <option value="AuthCodeFlow" selected="selected">Authorization Code Flow</option>
                     <option value="AuthCodeFlowPkce">Authorization Code Flow with PKCE</option>
                     <option value="ImplicitFlow">Implicit Flow (deprecated)</option>
                     <option value="ImplicitFlowPost">Implicit Flow with Form Post</option>
@@ -18,15 +21,52 @@
                     <option value="ResourceOwnerPasswordFlow">Resource Owner Password Flow</option>
                 </select>
             </label>
-            <div id="AuthCodeFlow">
-                <p>Endpoints:</p>
-                <ul>
-                    <li>{{.UrlPrefix}}/authorize</li>
-                    <li>{{.UrlPrefix}}/token</li>
-                    <li>{{.UrlPrefix}}/me</li>
-                </ul>
+            <div id="FlowDescriptions">
+                <div id="AuthCodeFlow" style="display: block">
+                    <p>Endpoints:</p>
+                    <ul>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code/authorize</a></li>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code/token</a></li>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code/me</a></li>
+                    </ul>
+                </div>
+                <div id="AuthCodeFlowPkce" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code-pkce/authorize</a></li>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code-pkce/token</a></li>
+                        <li><a href="javascript:void(0);" class="copyable">{{.UrlPrefix}}/auth-code-pkce/me</a></li>
+                    </ul>
+                </div>
+                <div id="ImplicitFlow" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                    </ul>
+                </div>
+                <div id="ImplicitFlowPost" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                    </ul>
+                </div>
+                <div id="HybridFlow" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                    </ul>
+                </div>
+                <div id="DeviceAuthorizationFlow" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                    </ul>
+                </div>
+                <div id="ResourceOwnerPasswordFlow" style="display: none">
+                    <p>Endpoints: (Not implemented)</p>
+                    <ul>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
+    <script src="/static/main.js"></script>
 </body>
 </html>
