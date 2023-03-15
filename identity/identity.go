@@ -25,22 +25,6 @@ var (
 	NotFoundError = errors.New("user not found")
 )
 
-func GetIdentity(id string) *Identity {
-	db.lock.Lock()
-	defer db.lock.Unlock()
-
-	identity, exists := db.Identities[id]
-	if !exists {
-		identity = generateIdentity()
-		if id != "" {
-			identity.Id = id
-		}
-
-		db.Identities[identity.Id] = identity
-	}
-	return identity
-}
-
 func GetIdentityByEmail(email string) *Identity {
 	db.lock.Lock()
 	defer db.lock.Unlock()
