@@ -12,8 +12,9 @@ import (
 )
 
 type loginData struct {
-	RedirectUri string
-	State       string
+	RedirectUri     string
+	State           string
+	KnownIdentities map[string]*identity.Identity
 }
 
 type redirectData struct {
@@ -105,8 +106,9 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := loginData{
-		RedirectUri: r.URL.Query().Get("redirect_uri"),
-		State:       r.URL.Query().Get("state"),
+		RedirectUri:     r.URL.Query().Get("redirect_uri"),
+		State:           r.URL.Query().Get("state"),
+		KnownIdentities: identity.GetAllIdentities(),
 	}
 
 	tpl := template.New("login")

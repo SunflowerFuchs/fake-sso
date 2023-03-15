@@ -41,6 +41,10 @@ func GetIdentityByEmail(email string) *Identity {
 	return newIdentity
 }
 
+func GetAllIdentities() map[string]*Identity {
+	return db.Identities
+}
+
 func generateIdentity() *Identity {
 	return &Identity{
 		Id:    uuid.NewString(),

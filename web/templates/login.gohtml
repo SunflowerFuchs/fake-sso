@@ -8,7 +8,14 @@
             <h1>OpenId Provider Mock</h1>
             <form method="post" action="/auth-code/submit">
                 <label>Email:
-                    <input type="email" name="email" required/>
+                    <input type="email" name="email" required list="known"/>
+                    {{if .KnownIdentities}}
+                        <datalist id="known">
+                        {{range .KnownIdentities}}
+                            <option>{{.Email}}</option>
+                        {{end}}
+                        </datalist>
+                    {{end}}
                 </label>
                 <input type="hidden" value="{{.RedirectUri}}" name="redirect_uri">
                 <input type="hidden" value="{{.State}}" name="state">
