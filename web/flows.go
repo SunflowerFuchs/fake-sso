@@ -119,7 +119,10 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 
 func submit(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
-	if !r.Form.Has("redirect_uri") || !r.Form.Has("state") || !r.Form.Has("email") {
+	if !r.Form.Has("redirect_uri") ||
+		!r.Form.Has("state") ||
+		!r.Form.Has("email") ||
+		len(strings.TrimSpace(r.Form.Get("email"))) == 0 {
 		sendJsonError("invalid_request", 400, w)
 		return
 	}
